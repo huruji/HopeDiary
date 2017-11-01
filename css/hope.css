@@ -1,0 +1,46 @@
+html,body{
+	height:100%;
+}
+.hope-footer{
+	height:50px;
+}
+.hope-fix.hope-footer{
+	position: fixed;
+	bottom:0px;
+	width: 100%;
+}
+.hope-fix.hope-footer ul li {
+	width: 33.33333333%;
+	height:100%;
+	list-style: none;
+}
+.hope-fix.hope-footer ul li a{
+	font-size: 16px;
+	text-align: center;
+}
+
+/*indexSub*/
+#title {
+	width: 100%;
+	text-align:center;
+	border:none;
+	background:#f7f7f7;
+}
+#release-btn {
+	position:fixed;
+	right:5px;
+	height:45px;
+	width:50px;
+	top: 0;
+	line-height: 45px;
+	cursor: pointer;
+	color: #007aff;
+}
+.hope-subIndex-header .mui-input-group:after{
+	height:0px;
+	background: none;
+}
+.hope-subIndex-header .mui-input-group .mui-input-row:after{
+	height:0px;
+	background: none;
+}

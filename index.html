@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/hope.css" rel="stylesheet"/>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+    </script>
+</head>
+<body>
+	<nav class="mui-bar mui-bar-tab">
+	    <a class="mui-tab-item mui-active" href="indexSub.html">
+	        <span class="mui-icon mui-icon-home"></span>
+	        <span class="mui-tab-label">发布</span>
+	    </a>
+	    <a class="mui-tab-item" href="tel.html">
+	        <span class="mui-icon mui-icon-phone"></span>
+	        <span class="mui-tab-label">浏览</span>
+	    </a>
+	    <a class="mui-tab-item" href="user.html">
+	        <span class="mui-icon mui-icon-email"></span>
+	        <span class="mui-tab-label">我的</span>
+	    </a>
+	</nav>
+</body>
+<script src="js/ajax.js"></script>
+<script type="text/jscript">
+	mui.init({
+		subpages: [{
+			url: 'tel.html',
+			id: 'tel.html',
+			styles: {
+				bottom: '45px'
+			}
+		},{
+			url: 'user.html',
+			id: 'user.html',
+			styles: {
+				bottom: '45px'
+			}
+		}]
+	});
+	
+	mui.plusReady(function() {
+		checkLogin();
+		var item = document.getElementsByClassName('mui-tab-item');
+		var subIds = Array.prototype.slice.apply(item).map(function(ele) {
+			return ele.getAttribute('href');
+		});
+		var subPages = [];
+		subIds.forEach(function(ele, i) {
+			subPages[i] = mui.preload({
+				url: ele,
+				id: ele,
+				styles: {
+					top: '0px',
+					bottom: '45px'
+				}
+			})
+		});
+		mui.preload({
+			url:'indexSub.html',
+			id: 'indexSub.html'
+		})
+		console.log(subIds);
+		subPages[0].show();
+		
+		changeView();
+		
+		
+		var backButtonPress = 0;
+		mui.back = function(event) {
+			backButtonPress++;
+			if (backButtonPress > 1) {
+				plus.runtime.quit();
+			} else {
+				plus.nativeUI.toast('再按一次退出应用');
+			}
+			setTimeout(function() {
+				backButtonPress = 0;
+			}, 1000);
+			return false;
+		};
+	})
+	function changeView() {
+		console.log(111111111111);
+		var item = document.getElementsByClassName('mui-tab-item');
+		Array.prototype.slice.apply(item).forEach(function(ele) {
+			ele.addEventListener('tap', function() {
+				var id = ele.getAttribute('href');
+				var view = plus.webview.getWebviewById(id);
+				view.reload();
+				setTimeout(function() {
+					view.show();
+				},10)
+			})
+		})
+	}
+	function checkLogin() {
+		function showLogin() {
+			var loginPage = mui.preload({
+				url: 'login.html',
+				id: 'login.html'
+			})
+			setTimeout(function() {
+				mui.openWindow({
+					id: 'login.html',
+				})
+			}, 0)
+		}
+		if(!localStorage.getItem('name') || !localStorage.getItem('avatar')) {
+			showLogin();
+			return;
+		}
+		var checkLoginUrl = 'http://ce.sysu.edu.cn/hopeapi/checklogin';
+		get(checkLoginUrl).then(function(data) {
+			if(data.code !== 200) {
+				localStorage.clear();
+				plus.nativeUI.toast('未登录，请先登录！');
+				showLogin();
+				return;
+			} else {
+				localStorage.setItem('name', data.name);
+				localStorage.setItem('avatar', data.avatar);
+			}	
+		})
+	}
+</script>
+</html>

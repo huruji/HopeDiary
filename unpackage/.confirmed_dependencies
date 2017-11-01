@@ -1,0 +1,65 @@
+{
+  "index.html": {
+    "resources": [
+      "js/mui.min.js",
+      "fonts/mui.ttf",
+      "css/mui.min.css",
+      "css/hope.css",
+      "indexSub.html",
+      "login.html",
+      "tel.html",
+      "js/ajax.js"
+    ],
+    "refer": [
+      "tel.html",
+      "indexSub.html",
+      "mail.html",
+      "user.html"
+    ]
+  },
+  "tel.html": {
+    "resources": [
+      "js/mui.min.js",
+      "fonts/mui.ttf",
+      "css/hope.css",
+      "css/mui.min.css",
+      "js/ajax.js"
+    ],
+    "refer": []
+  },
+  "indexSub.html": {
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css",
+      "css/hope.css",
+      "js/ajax.js"
+    ],
+    "refer": []
+  },
+  "user.html": {
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css",
+      "img/bg.jpg",
+      "img/user.jpg"
+    ],
+    "refer": [
+      "login.html"
+    ]
+  },
+  "login.html": {
+    "resources": [
+      "js/app.js",
+      "js/mui.min.js",
+      "css/mui.min.css",
+      "js/mui.enterfocus.js",
+      "fonts/mui.ttf",
+      "js/jsencrypt.min.js",
+      "js/ajax.js"
+    ],
+    "refer": [
+      "main.html",
+      "index.html"
+    ]
+  }
+}

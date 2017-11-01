@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/hope.css" rel="stylesheet"/>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav hope-subIndex-header" >
+			<form class="mui-input-group">
+    			<div class="mui-input-row">
+    			<input type="text" id="title" class="mui-input-clear" placeholder="请输入日志标题">
+    			</div>
+			</form>
+		   <span id="release-btn">发布</span> 
+		</header>
+		<div class="mui-content">
+        	<div class="mui-segmented-control">
+  		    <a class="mui-control-item mui-active" href="#record">记录</a>
+  		    <a class="mui-control-item" href="#think">思考</a>
+  		    <a class="mui-control-item" href="#plan">计划</a>
+  		</div>
+  		<div class="hope-text-forms">
+  			<div class="hope-diary-item" id="record">
+  				<textarea name="" rows="100" cols=""></textarea>
+  			</div>
+  			<div class="hope-diary-item" id="think">
+  				<textarea name="" rows="100" cols=""></textarea>
+  			</div>
+  			<div class="hope-diary-item" id="plan">
+  				<textarea name="" rows="100" cols=""></textarea>
+  			</div>
+  		</div>
+    </div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/ajax.js"></script>
+		<script type="text/javascript">
+			var addDiaryUrl = 'http://ce.sysu.edu.cn/hopeapi/adddiary';
+			var taped = false;
+			mui.init();
+			switchTab();
+			setTitle();
+			document.getElementById('release-btn').addEventListener('tap', function() {
+				if(taped){
+					return;
+				} else {
+					taped = true;
+					release(function() {
+						taped = false;
+					})
+				}
+			})
+			getContent();
+			storeContent();
+			getContent();
+			function storeContent() {
+				var textarea1 = document.getElementById('record').getElementsByTagName('textarea')[0];
+				var textarea2 = document.getElementById('think').getElementsByTagName('textarea')[0];
+				var textarea3 = document.getElementById('plan').getElementsByTagName('textarea')[0];
+				textarea1.addEventListener('change', function() {
+					localStorage.setItem('record',textarea1.value);
+				})
+				textarea2.addEventListener('change', function() {
+					localStorage.setItem('think',textarea2.value);
+				})
+				textarea3.addEventListener('change', function() {
+					localStorage.setItem('plan',textarea3.value);
+				})
+			}
+			function getContent() {
+				var textarea1 = document.getElementById('record').getElementsByTagName('textarea')[0];
+				var textarea2 = document.getElementById('think').getElementsByTagName('textarea')[0];
+				var textarea3 = document.getElementById('plan').getElementsByTagName('textarea')[0];
+				
+				textarea1.value = localStorage.getItem('record');
+				textarea2.value = localStorage.getItem('think');
+				textarea3.value = localStorage.getItem('plan');
+			}
+			function switchTab() {
+				var taps = document.getElementsByClassName('mui-control-item');
+				var textArr = document.getElementsByClassName('hope-diary-item');
+				for(var i = 0; i < textArr.length; i++) {
+					textArr[i].getElementsByTagName('textarea')[0].style.display = 'none';
+				}
+			
+				textArr[0].getElementsByTagName('textarea')[0].style.display = 'block';
+				Array.prototype.slice.apply(taps).forEach(function(ele, k) {
+					console.log(999)
+					console.log(k)
+					ele.addEventListener('click', function() {
+						for(var i = 0; i < textArr.length; i++) {
+							textArr[i].getElementsByTagName('textarea')[0].style.display = 'none';
+						}
+						textArr[k].getElementsByTagName('textarea')[0].style.display = 'block';
+					})
+					ele.addEventListener('tap', function() {
+						for(var i = 0; i < textArr.length; i++) {
+							textArr[i].getElementsByTagName('textarea')[0].style.display = 'none';
+						}
+						textArr[k].getElementsByTagName('textarea')[0].style.display = 'block';
+					})
+				})
+			}
+			
+			
+			function setTitle() {
+				var timeFlag = 9 * 60 * 60 *1000;
+			    var today = new Date(Date.now() - timeFlag);
+			    var year = today.getFullYear();
+			    var month = (today.getMonth() + 1) > 9 ? (today.getMonth() + 1) : ( '0' + (today.getMonth() + 1));
+			    var day = today.getDate() > 9 ? today.getDate() : ('0' + today.getDate());
+			    var title =  year + '-' + month + '-' + day;
+			    console.log(title);
+			    document.getElementById('title').value = title;
+			}
+			
+			function getRealeaseTime() {
+			    var today = new Date();
+			    var year = today.getFullYear();
+			    var month = (today.getMonth() + 1) > 9 ? (today.getMonth() + 1) : ( '0' + (today.getMonth() + 1));
+			    var day = today.getDate() > 9 ? today.getDate() : ('0' + today.getDate());
+			    var hour = today.getHours() > 9 ? today.getHours(): ('0' + today.getHours());
+			    var min = today.getMinutes() > 9 ? today.getMinutes(): ('0' + today.getMinutes());
+			    var seconds = today.getSeconds() > 9 ? today.getSeconds() : ('0' + today.getSeconds());
+			    return year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + seconds;
+			}
+			
+			function removeText() {
+				var textArr = document.getElementsByClassName('hope-diary-item');
+				for(var i = 0; i< textArr.length; i++) {
+					textArr[i].getElementsByTagName('textarea')[0].value='';
+				}
+			}
+			
+			function release(callback) {
+				var textArr = document.getElementsByClassName('hope-diary-item');
+				var title = document.getElementById('title').value;
+				var text = '';
+				var time = getRealeaseTime();
+				var titleArr = ['一、记录','二、思考','三、计划'];
+				var hasNoContent = true;
+				var valueArr = [];
+				for(var i =0; i< textArr.length; i++) {
+					valueArr[i] = textArr[i].getElementsByTagName('textarea')[0].value;
+				}
+				if(valueArr.every(function(ele,i) {
+					return ele.trim() == ''
+				})) {
+					console.log('内容不能为空');
+					plus.nativeUI.toast("内容不能为空！");
+					return;
+				}
+				for(var i = 0; i< textArr.length; i++) {
+					var valueArr = textArr[i].getElementsByTagName('textarea')[0].value.split('\n');
+					var contentText = '';
+					valueArr.forEach(function(ele, i) {
+						contentText += '<p>' + ele + '</p>';
+					})
+					text += '<p style="font-weight:bold;font-size:16px;">' + titleArr[i] + '</p>';
+					text += contentText;
+				}
+				
+				post(addDiaryUrl,{
+					title: title,
+					content: text,
+					time: time
+				}).then(function(data) {
+					if(data.code==200) {
+						plus.nativeUI.toast('发布成功！');
+						localStorage.removeItem('record');
+						localStorage.removeItem('think');
+						localStorage.removeItem('plan');
+						removeText();
+						/*var loginPage = mui.preload({
+							url: 'tel.html',
+							id: 'tel.html'
+						})
+						setTimeout(function() {
+							mui.openWindow({
+								id: 'tel.html',
+							})
+						}, 10)*/
+					} else {
+						plus.nativeUI.toast('发布失败，稍后再试！');
+					}
+					callback && callback();
+				})
+				
+			}
+		</script>
+	</body>
+
+</html>

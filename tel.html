@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/hope.css" rel="stylesheet"/>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+    </script>
+    <style>
+    	.hope-diary-content{
+    		color:#000000;
+    	}
+    	.hope-diary-content *{
+    		color: #000000;
+    	}
+    	.hope-diary-list-item .hope-diary-title{
+    		position:relative;
+    		height:20px;
+    		border-bottom:1px solid #EEEEEE ;
+    	}
+    	.hope-diary-list-item .hope-diary-title .author {
+    		position: absolute;
+    		left:0;
+    	}
+    	.hope-diary-list-item .hope-diary-title .time {
+    		position: absolute;
+    		right:0;
+    	}
+    </style>
+</head>
+<body>
+<header class="mui-bar mui-bar-nav">
+    <h1 class="mui-title">浏览日志</h1>
+</header>
+<div class="mui-content" id="hope-refresh">
+	<ul class="mui-table-view" id="hope-diary-container">
+    	<!--<li class="mui-table-view-cell hope-diary-list-item">
+    		<p class="hope-diary-title">
+    			<span class="author">黄睿</span>
+    			<span class="time">2017-10-29</span>
+    		</p>
+    		<div class="hope-diary-content">
+		<p>一、记录</p><p>1、看书</p><p>2、看HTML5+规范</p><p>3、夜跑</p><p>二、思考</p><p>1、好好学习吧</p><p>三、计划</p><p>1、看书写实验报告</p>
+    		</div>
+    	</li>
+    	-->
+	</ul>
+</div>
+<script src="js/ajax.js"></script>
+</body>
+<script>
+	var listUrl= 'http://ce.sysu.edu.cn/hopeapi/diarylist?page=';
+	var page = 1;
+	mui.init({
+		pullRefresh : {
+    		container:'body',
+    		up : {
+      			height:10,
+      			auto:true,
+      			contentrefresh : "正在加载...",
+      			contentnomore:'没有更多数据了',
+      			callback :pullfresh 
+    		},
+    		down : {
+      			style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+      			color:'#007aff', //可选，默认“#2BD009” 下拉刷新控件颜色
+      			height:'50px',//可选,默认50px.下拉刷新控件的高度,
+      			range:'100px', //可选 默认100px,控件可下拉拖拽的范围
+      			offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
+      			callback :downFresh //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+    		}
+  		}
+	});
+	mui.plusReady(function() {
+		mui.back = function(event) {
+			backButtonPress++;
+			if (backButtonPress > 1) {
+				plus.runtime.quit();
+			} else {
+				plus.nativeUI.toast('再按一次退出应用');
+			}
+			setTimeout(function() {
+				backButtonPress = 0;
+			}, 1000);
+			return false;
+		};
+	})
+	function downFresh() {
+		setTimeout(function(){
+			page = 1;
+			document.getElementById('hope-diary-container').innerHTML = '';
+			getList(listUrl + page, function() {
+				 mui('body').pullRefresh().endPulldown();
+				page = page + 1;
+			})
+		}, 100)
+	}
+	function pullfresh() {
+		setTimeout(function(){
+		console.log(8888888);
+		getList(listUrl + page, function() {
+			page = page + 1;
+			mui('body').pullRefresh().endPullup(false);
+		})
+		}, 100)
+	}
+	function getList(url,callback) {
+		console.log(url);
+		get(url).then(function(data) {
+			var fragment = document.createDocumentFragment();
+			var list = data.data;
+			for(var i =0; i< list.length; i++) {
+				var li = createListItem(list[i].author, list[i].time, list[i].content);
+				fragment.appendChild(li);
+			}
+			document.getElementById('hope-diary-container').appendChild(fragment);
+			callback && callback();
+		});
+	}
+	
+	function createListItem(author, time, content) {
+		var li = document.createElement('li');
+		li.className = 'mui-table-view-cell hope-diary-list-item';
+		var p = document.createElement('p');
+		p.className = 'hope-diary-title';
+		p.innerHTML = '<span class="author">' + author + '</span><span class="time">' + time +'</span>';
+		li.appendChild(p);
+		var contentNode = document.createElement('div');
+		contentNode.className = 'hope-diary-content';
+		contentNode.innerHTML = content;
+		li.appendChild(contentNode);
+		return li;
+	}
+</script>
+
+</html>
